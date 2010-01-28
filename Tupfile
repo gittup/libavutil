@@ -18,6 +18,7 @@ objs = adler32.c                                                        \
        mathematics.c                                                    \
        md5.c                                                            \
        mem.c                                                            \
+       pixdesc.c                                                        \
        random_seed.c                                                    \
        rational.c                                                       \
        rc4.c                                                            \
