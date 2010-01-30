@@ -2,6 +2,8 @@ include_rules
 include $(GITTUP_ROOT)/mplayer/mplayer.tup
 include $(GITTUP_ROOT)/mplayer/common.tup
 
+NAME = avutil
+
 objs = adler32.c                                                        \
        aes.c                                                            \
        avstring.c                                                       \
@@ -25,7 +27,12 @@ objs = adler32.c                                                        \
        tree.c                                                           \
        utils.c                                                          \
 
+
+
+
 ifeq (@(MPLAYER),y)
-: foreach $(objs) |> !cc |> %B.o {objs}
-: {objs} |> !ar |> libavutil.a
+objs-@(HAVE_MMX) += $(MMX-objs-y)
+objs += $(objs-y)
+: foreach $(objs) |> !mplayer. |> %B.o {objs}
+: {objs} |> !ar |> lib$(NAME).a
 endif
