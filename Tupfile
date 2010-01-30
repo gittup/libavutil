@@ -1,7 +1,6 @@
 include_rules
 include $(GITTUP_ROOT)/mplayer/mplayer.tup
-
-CFLAGS += -DHAVE_AV_CONFIG_H
+include $(GITTUP_ROOT)/mplayer/common.tup
 
 objs = adler32.c                                                        \
        aes.c                                                            \
