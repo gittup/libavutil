@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
+ *
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -16,26 +18,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "config.h"
-#include "avutil.h"
+#ifndef AVUTIL_X86_INTMATH_H
+#define AVUTIL_X86_INTMATH_H
 
-/**
- * @file libavutil/utils.c
- * various utility functions
- */
+#include "libavutil/common.h"
 
-unsigned avutil_version(void)
-{
-    return LIBAVUTIL_VERSION_INT;
-}
+#define FASTDIV(a,b) \
+    ({\
+        int ret, dmy;\
+        __asm__ volatile(\
+            "mull %3"\
+            :"=d"(ret), "=a"(dmy)\
+            :"1"(a), "g"(ff_inverse[b])\
+            );\
+        ret;\
+    })
 
-const char *avutil_configuration(void)
-{
-    return FFMPEG_CONFIGURATION;
-}
-
-const char *avutil_license(void)
-{
-#define LICENSE_PREFIX "libavutil license: "
-    return LICENSE_PREFIX FFMPEG_LICENSE + sizeof(LICENSE_PREFIX) - 1;
-}
+#endif /* AVUTIL_X86_INTMATH_H */

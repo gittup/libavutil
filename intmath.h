@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
+ *
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -16,26 +18,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef AVUTIL_INTMATH_H
+#define AVUTIL_INTMATH_H
+
 #include "config.h"
-#include "avutil.h"
+#include "common.h"
 
-/**
- * @file libavutil/utils.c
- * various utility functions
- */
+extern const uint32_t ff_inverse[257];
 
-unsigned avutil_version(void)
-{
-    return LIBAVUTIL_VERSION_INT;
-}
+#if   ARCH_ARM
+#   include "arm/intmath.h"
+#elif ARCH_X86
+#   include "x86/intmath.h"
+#endif
 
-const char *avutil_configuration(void)
-{
-    return FFMPEG_CONFIGURATION;
-}
+#if HAVE_FAST_CLZ && AV_GCC_VERSION_AT_LEAST(3,4)
 
-const char *avutil_license(void)
-{
-#define LICENSE_PREFIX "libavutil license: "
-    return LICENSE_PREFIX FFMPEG_LICENSE + sizeof(LICENSE_PREFIX) - 1;
-}
+#ifndef av_log2
+
+#define av_log2(x) (31 - __builtin_clz((x)|1))
+
+#ifndef av_log2_16bit
+#define av_log2_16bit av_log2
+#endif
+
+#endif /* av_log2 */
+
+#endif /* AV_GCC_VERSION_AT_LEAST(3,4) */
+
+#ifndef FASTDIV
+
+#if CONFIG_FASTDIV
+#    define FASTDIV(a,b)   ((uint32_t)((((uint64_t)a) * ff_inverse[b]) >> 32))
+#else
+#    define FASTDIV(a,b)   ((a) / (b))
+#endif
+
+#endif /* FASTDIV */
+
+#endif /* AVUTIL_INTMATH_H */
